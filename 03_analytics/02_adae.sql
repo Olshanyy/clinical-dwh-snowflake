@@ -1,0 +1,34 @@
+USE ROLE CLINICAL_ETL_ROLE;
+USE WAREHOUSE ETL_WH;
+USE DATABASE CLINICAL_DWH;
+USE SCHEMA ANALYTICS;
+
+CREATE OR REPLACE TABLE ADAE AS
+SELECT
+  ae.STUDYID,
+  ae.USUBJID,
+
+  /* AE info */
+  ae.AEDECOD,
+  ae.AEBODSYS,
+  ae.AESER,
+  ae.AESEV,
+  ae.AESTDT,
+  ae.AEENDTC,
+  ae.AESERFL,
+
+  /* Subject-level attributes */
+  adsl.ARM,
+  adsl.AGE,
+  adsl.SEX,
+  adsl.COUNTRY,
+
+  /* Analysis flags */
+  CASE
+    WHEN adsl.SAFFL = 'Y' THEN 'Y'
+    ELSE 'N'
+  END AS ANL01FL
+
+FROM STAGING.STG_AE ae
+INNER JOIN ANALYTICS.ADSL adsl
+  ON ae.USUBJID = adsl.USUBJID;

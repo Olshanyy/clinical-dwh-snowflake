@@ -1,0 +1,30 @@
+USE ROLE CLINICAL_ETL_ROLE;
+USE WAREHOUSE ETL_WH;
+USE DATABASE CLINICAL_DWH;
+USE SCHEMA ANALYTICS;
+
+CREATE OR REPLACE TABLE ADSL AS
+SELECT
+  dm.STUDYID,
+  dm.USUBJID,
+  dm.SUBJID,
+  dm.SITEID,
+  dm.AGE,
+  dm.SEX,
+  dm.ARM,
+  dm.COUNTRY,
+  dm.RFSTDTC,
+
+  /* ADaM-style flags */
+  dm.SAFFL,
+
+  /* Treatment flags */
+  CASE
+    WHEN dm.ARM IS NOT NULL THEN 'Y'
+    ELSE 'N'
+  END AS TRTEMFL,
+
+  /* Population flags (example) */
+  'Y' AS ITTFL
+
+FROM STAGING.STG_DM dm;
